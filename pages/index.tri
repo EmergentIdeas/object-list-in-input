@@ -1,0 +1,9 @@
+__::start__
+<div class="page page-landing">
+	<label> One
+		<div class="data">
+			<input name="one" type="hidden" class="object-list-view" value="[{&quot;name&quot;: &quot;one&quot;},{&quot;name&quot;: &quot;two&quot;}]" />
+		</div>
+	</label>
+</div>
+__::end__
