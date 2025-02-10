@@ -1,7 +1,7 @@
 {
 	"name": "@webhandle/object-list-in-input",
-	"version": "1.0.0",
-	"main": "client-lib/index.js",
+	"version": "1.0.1",
+	"main": "client-lib/index.mjs",
 	"scripts": {
 		"test": "node_modules/mocha/bin/mocha",
 		"less-build": "npx lessc --source-map --source-map-include-source less/pages.less public/css/pages.css",
