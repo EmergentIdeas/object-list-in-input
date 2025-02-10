@@ -1,8 +1,5 @@
-// import {default as go} from './index.js'
-// go()
 
 import ObjectListView from "../client-lib/index.mjs"
-let i = 0
 
 let inputs = document.querySelectorAll('input[type="hidden"].object-list-view')
 for(let input of inputs) {
@@ -17,6 +14,19 @@ for(let input of inputs) {
 		</label>
 		
 		`
+		, renderTileDetails: function(data) {
+			return `Name: ${data.name}`
+		}
+
+		, afterOpen(bodyElement, self) {
+			bodyElement.style.backgroundColor = '#eeeeee'
+		}
+		// , generateStyles() {
+		// 	return ''
+		// }
+		// , renderTile(data) {
+		// 	return ''
+		// }
 	})
 	view.render()
 	input.after(view.el)

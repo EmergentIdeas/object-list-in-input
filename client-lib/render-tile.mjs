@@ -2,7 +2,7 @@ import escapeAttributeValue from '@dankolz/escape-html-attribute-value'
 
 export default function renderTile(data) {
 
-return `<li class="tile"  data-serialized="${escapeAttributeValue(JSON.stringify(data))}" draggable="true" style="touch-action: none;">
+return `<li class="${this.listItemClass || 'tile'}"  data-serialized="${escapeAttributeValue(JSON.stringify(data))}" draggable="true" style="touch-action: none;">
 	<div class="actions">
 		<a class="edit">e</a>
 		<a class="delete" >&times;</a>

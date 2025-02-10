@@ -1,5 +1,5 @@
 {
-	"name": "object-list-in-input",
+	"name": "@webhandle/object-list-in-input",
 	"version": "1.0.0",
 	"main": "client-lib/index.js",
 	"scripts": {
@@ -56,8 +56,8 @@
 	},
 	"files": [
 		"/client-lib",
-		"/less/components.less",
-		"/public/js/index*"
+		"package.json",
+		"README.md"
 	],
 	"type": "module"
 }

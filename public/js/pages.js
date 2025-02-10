@@ -774,16 +774,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ ObjectListView)
 /* harmony export */ });
 /* harmony import */ var _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @webhandle/backbone-view */ "./node_modules/@webhandle/backbone-view/client-js/index.js");
-/* harmony import */ var _webhandle_gather_form_data__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @webhandle/gather-form-data */ "./node_modules/@webhandle/gather-form-data/gather-form-data.mjs");
-/* harmony import */ var form_value_injector__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! form-value-injector */ "./node_modules/form-value-injector/form-value-injector.js");
-/* harmony import */ var _webhandle_drag_sortable_list__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @webhandle/drag-sortable-list */ "./node_modules/@webhandle/drag-sortable-list/client-lib/list-view.mjs");
-/* harmony import */ var _webhandle_form_answer_dialog__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @webhandle/form-answer-dialog */ "./node_modules/@webhandle/form-answer-dialog/client-lib/form-answer-dialog.mjs");
-/* harmony import */ var _generate_styles_mjs__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./generate-styles.mjs */ "./client-lib/generate-styles.mjs");
-/* harmony import */ var _render_tile_mjs__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./render-tile.mjs */ "./client-lib/render-tile.mjs");
-
-// import escapeAttributeValue from './escape-attribute-value.mjs'
-
-
+/* harmony import */ var _webhandle_drag_sortable_list__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @webhandle/drag-sortable-list */ "./node_modules/@webhandle/drag-sortable-list/client-lib/list-view.mjs");
+/* harmony import */ var _webhandle_form_answer_dialog__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @webhandle/form-answer-dialog */ "./node_modules/@webhandle/form-answer-dialog/client-lib/form-answer-dialog.mjs");
+/* harmony import */ var _generate_styles_mjs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./generate-styles.mjs */ "./client-lib/generate-styles.mjs");
+/* harmony import */ var _render_tile_mjs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./render-tile.mjs */ "./client-lib/render-tile.mjs");
 
 
 
@@ -794,11 +788,8 @@ __webpack_require__.r(__webpack_exports__);
 class ObjectListView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE_0__.View {
 	constructor(options) {
 		super(options)
-		this.input = options.input
-		this.renderTile = options.renderTile || this.renderTile
-		this.renderTileDetails = options.renderTileDetails || this.renderTileDetails
 		this.listClass = options.listClass || 'object-list-view-list'
-		this.listItemClass = options.listItemClass = 'tile'
+		this.listItemClass = options.listItemClass || 'tile'
 		if ('renderStyles' in options) {
 			this.renderStyles = options.renderStyles
 		}
@@ -817,64 +808,60 @@ class ObjectListView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE_0
 		}
 	}
 	
-	generateStyles = _generate_styles_mjs__WEBPACK_IMPORTED_MODULE_5__["default"]
-
-	renderTile = _render_tile_mjs__WEBPACK_IMPORTED_MODULE_6__["default"]
-
 	renderTileDetails(data) {
 		return `${data.name}`
 	}
 	
-	renderEditForm() {
+	renderEditForm(data) {
 		return ''
 	}
 
-	getData() {
+	async getData() {
 		let value = this.input.value
 		if (!value) {
 			return []
 		}
 		return JSON.parse(value) || []
 	}
+	
+	async setData(data) {
+		this.input.value = data
+	}
 
-	updateInput() {
+	async updateData() {
 		let result = []
 		let items = this.el.querySelectorAll('.' + this.listItemClass)
 		for (let item of items) {
 			result.push(JSON.parse(item.getAttribute(this.dataAttributeName)))
 		}
-		this.input.value = JSON.stringify(result)
+		return this.setData(JSON.stringify(result))
 	}
 	
 	generateButtonRow(additionalClasses) {
-		return `<div class="button-row ${additionalClasses}"><a href="#" class="add-item">Add</a></div>`
+		return `<div class="button-row ${additionalClasses || ''}"><a href="#" class="add-item">Add</a></div>`
 	}
 
-	render() {
+	async render() {
 		let content = ''
 		if (this.renderStyles) {
 			content += this.generateStyles()
 		}
 		
-		content += this.generateButtonRow()
+		content += this.generateButtonRow(this.additionalButtonRowClasses)
 
 		content += `<ul class="${this.listClass}">`
-		for (let dat of this.getData()) {
+		for (let dat of (await this.getData())) {
 			content += this.renderTile(dat)
 		}
 		content += '</ul>'
 		
 		content += this.generateButtonRow()
 		
-		
 		this.el.innerHTML = content
 
-
 		let elList = this.el.querySelector('ul')
-		let itemsList = new _webhandle_drag_sortable_list__WEBPACK_IMPORTED_MODULE_3__["default"]({
+		let itemsList = new _webhandle_drag_sortable_list__WEBPACK_IMPORTED_MODULE_1__["default"]({
 			el: elList
-			// , mobileHandleSelector: `.${this.listItemClass} .move`
-			, mobileHandleSelector: `.${this.listItemClass}`
 			, createCellsForFiles(files) {
 				return []
 			}
@@ -885,7 +872,7 @@ class ObjectListView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE_0
 		itemsList.render()
 		this.itemsList = itemsList
 		this.itemsList.emitter.on('list-change', (evt) => {
-			this.updateInput()
+			this.updateData()
 		})
 
 		return this
@@ -896,7 +883,7 @@ class ObjectListView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE_0
 		let answer = confirm('Please confirm that you want to delete this item?')
 		if(answer) {
 			selected.closest('.' + this.listItemClass).remove()
-			this.updateInput()
+			this.updateData()
 		}
 	}
 
@@ -904,43 +891,50 @@ class ObjectListView extends _webhandle_backbone_view__WEBPACK_IMPORTED_MODULE_0
 		evt.preventDefault()
 		let li = selected.closest('.' + this.listItemClass)
 		let data = JSON.parse(li.getAttribute(this.dataAttributeName))
-		let dialog = new _webhandle_form_answer_dialog__WEBPACK_IMPORTED_MODULE_4__["default"]({
+		let dialog = new _webhandle_form_answer_dialog__WEBPACK_IMPORTED_MODULE_2__["default"]({
 			data: data
 			, title: 'Edit'
-			, body: this.renderEditForm
+			, body: this.stringifyEditForm(data)
+			, afterOpen: this.afterOpen
 		})
 
 		let info = await dialog.open()
 
-		console.log(JSON.stringify(info))
-		
 		if(info) {
 			li.querySelector('.details').innerHTML = this.renderTileDetails(info)	
 			li.setAttribute(this.dataAttributeName, JSON.stringify(info))
-			this.updateInput()
+			this.updateData()
 		}
-
 	}
 
 	async addClicked(evt, selected) {
 		evt.preventDefault()
-		let dialog = new _webhandle_form_answer_dialog__WEBPACK_IMPORTED_MODULE_4__["default"]({
+		let dialog = new _webhandle_form_answer_dialog__WEBPACK_IMPORTED_MODULE_2__["default"]({
 			title: 'Add'
-			, body: this.renderEditForm
+			, body: this.stringifyEditForm()
+			, afterOpen: this.afterOpen
 		})
 
 		let info = await dialog.open()
-		console.log(JSON.stringify(info))
 		
 		if(info) {
 			let html = this.renderTile(info)
 			let ul = this.el.querySelector('.' + this.listClass)
 			ul.insertAdjacentHTML('beforeend', html)
-			this.updateInput()
+			this.updateData()
 		}
-
+	}
+	
+	stringifyEditForm(data) {
+		if(typeof this.renderEditForm === 'string') {
+			return this.renderEditForm
+		}
+		return this.renderEditForm(data)
 	}
 }
+
+ObjectListView.prototype.generateStyles = _generate_styles_mjs__WEBPACK_IMPORTED_MODULE_3__["default"]
+ObjectListView.prototype.renderTile = _render_tile_mjs__WEBPACK_IMPORTED_MODULE_4__["default"]
 
 
 /***/ }),
@@ -960,7 +954,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function renderTile(data) {
 
-return `<li class="tile"  data-serialized="${_dankolz_escape_html_attribute_value__WEBPACK_IMPORTED_MODULE_0__(JSON.stringify(data))}" draggable="true" style="touch-action: none;">
+return `<li class="${this.listItemClass || 'tile'}"  data-serialized="${_dankolz_escape_html_attribute_value__WEBPACK_IMPORTED_MODULE_0__(JSON.stringify(data))}" draggable="true" style="touch-action: none;">
 	<div class="actions">
 		<a class="edit">e</a>
 		<a class="delete" >&times;</a>
@@ -2433,11 +2427,8 @@ var __webpack_exports__ = {};
   \*****************************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _client_lib_index_mjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../client-lib/index.mjs */ "./client-lib/index.mjs");
-// import {default as go} from './index.js'
-// go()
 
 
-let i = 0
 
 let inputs = document.querySelectorAll('input[type="hidden"].object-list-view')
 for(let input of inputs) {
@@ -2452,6 +2443,19 @@ for(let input of inputs) {
 		</label>
 		
 		`
+		, renderTileDetails: function(data) {
+			return `Name: ${data.name}`
+		}
+
+		, afterOpen(bodyElement, self) {
+			bodyElement.style.backgroundColor = '#eeeeee'
+		}
+		// , generateStyles() {
+		// 	return ''
+		// }
+		// , renderTile(data) {
+		// 	return ''
+		// }
 	})
 	view.render()
 	input.after(view.el)
