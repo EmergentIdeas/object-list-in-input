@@ -18,6 +18,24 @@ and asynchronus so that the data could be stored across the network.
 npm install @webhandle/object-list-in-input
 ```
 
+## Initialize as Webhandle Component
+
+```js
+import setupObjectList from "@webhandle/object-list-in-input/initialize-webhandle-component.mjs"
+let managerObjectList = await setupObjectList(webhandle)
+```
+
+## Webhandle Component Configuration
+```json
+{
+	"@webhandle/object-list-in-input": {
+		"publicFilesPrefix": "/@webhandle/object-list-in-input/files"
+		, "alwaysProvideResources": false
+	}
+}
+```
+
+
 
 ## Dependencies
 

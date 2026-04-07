@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" class="no-js">
+<html lang="en" class="no-js __pageType__ __page.editor.disablePropertyEditor??'disable-property-editor'__ __page.editor.disablePageEditor??'disable-page-editor'__">
 <head>
-
 <meta charset="UTF-8">
 
 <title>__page.title__</title>
@@ -28,10 +27,13 @@
 	webpdetect()
 </script>
 
-<link href="/css/pages.css" rel="stylesheet">
+__externalResourceManager.render()__
 
-<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+
+
+
 
 
 </head>
 <body class="modern ready-to-load-img">
+

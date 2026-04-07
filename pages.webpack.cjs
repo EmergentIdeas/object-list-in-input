@@ -1,5 +1,4 @@
 const path = require('path');
-const NodePolyfillPlugin = require("node-polyfill-webpack-plugin")
 
 /* need to install:
 
@@ -9,14 +8,15 @@ npm i --save-dev webpack-cli node-polyfill-webpack-plugin
 
 
 module.exports = [{
-	entry: './client-js/pages.mjs',
-	mode: 'development',
+	entry: './client-lib/index.mjs',
+	// mode: 'development',
+	mode: 'production',
 	"devtool": 'source-map',
 	experiments: {
 		outputModule: true,
 	},
 	output: {
-		filename: 'pages.js',
+		filename: 'index.js',
 		path: path.resolve(__dirname, 'public/js'),
 		library: {
 			type: 'module',
@@ -29,21 +29,19 @@ module.exports = [{
 			, {
 				test: /\.txt$/i,
 				use: 'raw-loader',
-			  }
+			}
 		],
 	},
-	resolve: {
-		fallback: {
-			stream: require.resolve('stream-browserify'),
-		}
-	},
-	plugins: [
-		// new NodePolyfillPlugin()
-	],
 	stats: {
 		colors: true,
 		reasons: true
-	},
+	}
+
+	, externals: {
+		"@webhandle/backbone-view": '@webhandle/backbone-view'
+		, "@webhandle/dialog": '@webhandle/dialog'
+		, "@webhandle/drag-sortable-list": "@webhandle/drag-sortable-list"
+	}
 
 }
 ]

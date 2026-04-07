@@ -1,9 +1,65 @@
 __::start__
+__::@webhandle/object-list-in-input/renderExternalResources__
 <div class="page page-landing">
 	<label> One
 		<div class="data">
 			<input name="one" type="hidden" class="object-list-view" value="[{&quot;name&quot;: &quot;one&quot;},{&quot;name&quot;: &quot;Angie&quot;},{&quot;name&quot;: &quot;two&quot;}]" />
 		</div>
 	</label>
+	<label> Two
+		<div class="data">
+			<input name="two" type="hidden" class="object-list-view" value="[&quot;one&quot;,&quot;two&quot;,&quot;three&quot;]" />
+		</div>
+	</label>
 </div>
+
+<script type="module">
+	
+
+import ObjectListView from "@webhandle/object-list-in-input"
+
+let input = document.querySelector('input[name="one"]')
+let view = new ObjectListView({
+	input: input
+	, renderEditForm: 
+	`
+	<label>
+		Name:
+		<br>
+		<input name="name" type="text" />
+	</label>
+	
+	`
+	, renderTileDetails: function(data) {
+		return `Name: ${data.name}`
+	}
+})
+view.render()
+input.after(view.el)
+	
+input = document.querySelector('input[name="two"]')
+view = new ObjectListView({
+	input: input
+	, returnedInfoProcessor(obj) {
+		return Object.entries(obj)[0][1]
+	}
+	, preInjectionProcessor(val) {
+		return {
+			content: val
+		}
+	}
+	, renderEditForm: 
+	`
+	<label>
+		<input name="content" type="text" />
+	</label>
+	
+	`
+	, renderTileDetails: function(data) {
+		return `${data}`
+	}
+})
+view.render()
+input.after(view.el)
+</script>
 __::end__

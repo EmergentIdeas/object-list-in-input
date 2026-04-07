@@ -1,22 +1,15 @@
 import { View } from '@webhandle/backbone-view'
-import ListView from '@webhandle/drag-sortable-list'
-import FormAnswerDialog from '@webhandle/form-answer-dialog'
-import generateStyles from './generate-styles.mjs'
+import { ListView } from '@webhandle/drag-sortable-list'
+import { FormAnswerDialog } from '@webhandle/dialog'
 import renderTile from './render-tile.mjs'
 
 
-export default class ObjectListView extends View {
+export class ObjectListView extends View {
 	constructor(options) {
 		super(options)
 		this.listClass = options.listClass || 'object-list-view-list'
 		this.listItemClass = options.listItemClass || 'tile'
-		if ('renderStyles' in options) {
-			this.renderStyles = options.renderStyles
-		}
-		else {
-			this.renderStyles = true
-		}
-		
+
 		this.dataAttributeName = options.dataAttributeName || 'data-serialized'
 	}
 
@@ -27,11 +20,11 @@ export default class ObjectListView extends View {
 			, 'click .add-item': 'addClicked'
 		}
 	}
-	
+
 	renderTileDetails(data) {
 		return `${data.name}`
 	}
-	
+
 	renderEditForm(data) {
 		return ''
 	}
@@ -43,7 +36,7 @@ export default class ObjectListView extends View {
 		}
 		return JSON.parse(value) || []
 	}
-	
+
 	async setData(data) {
 		this.input.value = data
 	}
@@ -56,17 +49,14 @@ export default class ObjectListView extends View {
 		}
 		return this.setData(JSON.stringify(result))
 	}
-	
+
 	generateButtonRow(additionalClasses) {
 		return `<div class="button-row ${additionalClasses || ''}"><a href="#" class="add-item">Add</a></div>`
 	}
 
 	async render() {
 		let content = ''
-		if (this.renderStyles) {
-			content += this.generateStyles()
-		}
-		
+
 		content += this.generateButtonRow(this.additionalButtonRowClasses)
 
 		content += `<ul class="${this.listClass}">`
@@ -74,9 +64,9 @@ export default class ObjectListView extends View {
 			content += this.renderTile(dat)
 		}
 		content += '</ul>'
-		
+
 		content += this.generateButtonRow()
-		
+
 		this.el.innerHTML = content
 
 		let elList = this.el.querySelector('ul')
@@ -101,27 +91,40 @@ export default class ObjectListView extends View {
 	deleteClicked(evt, selected) {
 		evt.preventDefault()
 		let answer = confirm('Please confirm that you want to delete this item?')
-		if(answer) {
+		if (answer) {
 			selected.closest('.' + this.listItemClass).remove()
 			this.updateData()
 		}
+	}
+	afterOpen() {
+
 	}
 
 	async editClicked(evt, selected) {
 		evt.preventDefault()
 		let li = selected.closest('.' + this.listItemClass)
 		let data = JSON.parse(li.getAttribute(this.dataAttributeName))
+		data = this.preInjectionProcessor(data)
+		
+		
+
 		let dialog = new FormAnswerDialog({
 			data: data
 			, title: 'Edit'
 			, body: this.stringifyEditForm(data)
-			, afterOpen: this.afterOpen
 		})
+		dialog.afterOpenOrg = dialog.afterOpen
+		dialog.afterOpenList = this.afterOpen
+		dialog.afterOpen = function() {
+			this.afterOpenOrg()
+			this.afterOpenList()
+		}
 
 		let info = await dialog.open()
 
-		if(info) {
-			li.querySelector('.details').innerHTML = this.renderTileDetails(info)	
+		if (info) {
+			info = this.returnedInfoProcessor(info)
+			li.querySelector('.details').innerHTML = this.renderTileDetails(info)
 			li.setAttribute(this.dataAttributeName, JSON.stringify(info))
 			this.updateData()
 		}
@@ -132,12 +135,18 @@ export default class ObjectListView extends View {
 		let dialog = new FormAnswerDialog({
 			title: 'Add'
 			, body: this.stringifyEditForm()
-			, afterOpen: this.afterOpen
 		})
+		dialog.afterOpenOrg = dialog.afterOpen
+		dialog.afterOpenList = this.afterOpen
+		dialog.afterOpen = function() {
+			this.afterOpenOrg()
+			this.afterOpenList()
+		}
 
 		let info = await dialog.open()
-		
-		if(info) {
+
+		if (info) {
+			info = this.returnedInfoProcessor(info)
 			let html = this.renderTile(info)
 			let ul = this.el.querySelector('.' + this.listClass)
 			ul.insertAdjacentHTML('beforeend', html)
@@ -145,13 +154,23 @@ export default class ObjectListView extends View {
 		}
 	}
 	
+	preInjectionProcessor(info) {
+		return info
+	}
+	returnedInfoProcessor(info) {
+		return info
+	}
+
 	stringifyEditForm(data) {
-		if(typeof this.renderEditForm === 'string') {
+		if (typeof this.renderEditForm === 'string') {
 			return this.renderEditForm
 		}
 		return this.renderEditForm(data)
 	}
+
+	renderTile = renderTile
 }
 
-ObjectListView.prototype.generateStyles = generateStyles
-ObjectListView.prototype.renderTile = renderTile
+
+export { View, ListView, FormAnswerDialog }
+export default ObjectListView
