@@ -1,6 +1,6 @@
 {
 	"name": "@webhandle/object-list-in-input",
-	"version": "2.0.0",
+	"version": "2.0.1",
 	"main": "client-lib/index.mjs",
 	"scripts": {
 		"client-js-build": "npx webpack-cli --config pages.webpack.cjs",
@@ -27,6 +27,7 @@
 	"files": [
 		"/client-lib",
 		"public/js",
+		"public/css",
 		"package.json",
 		"README.md",
 		"*.mjs"
