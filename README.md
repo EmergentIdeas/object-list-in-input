@@ -60,7 +60,7 @@ for(let input of inputs) {
 		}
 		// Code that gets run after the create/edit dialog opens
 		, afterOpen(dialogBodyElement, self) {
-			bodyElement.style.backgroundColor = '#eeeeee'
+			dialogBodyElement.style.backgroundColor = '#eeeeee'
 		}
 	})
 	
