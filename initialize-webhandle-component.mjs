@@ -26,12 +26,12 @@ initializeWebhandleComponent.setup = async function(webhandle, config) {
 	let managerDialog = await setupDialog(webhandle)
 	let managerDragSortableList = await setupDragSortableList(webhandle)
 
-	webhandle.routers.preDynamic.use((req, res, next) => {
-		if(config.alwaysProvideResources || !initializeWebhandleComponent.supportsMultipleImportMaps(req)) {
+	if(config.alwaysProvideResources) {
+		webhandle.routers.preDynamic.use((req, res, next) => {
 			manager.addExternalResources(res.locals.externalResourceManager)
-		}
-		next()
-	})
+			next()
+		})
+	}
 	
 	manager.addExternalResources = (externalResourceManager, options) => {
 		managerDialog.addExternalResources(externalResourceManager)
